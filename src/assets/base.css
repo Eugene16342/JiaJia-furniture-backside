@@ -1,0 +1,23 @@
+@charset "UTF-8";
+/* 全局SCSS */
+/* 通用顏色*/
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  scroll-behavior: smooth;
+}
+
+/* @import url("https://fonts.googleapis.com/css2?family=Zen+Old+Mincho&display=swap");*/
+body {
+  height: 100%;
+  font-family: "Zen Old Mincho", Arial, sans-serif;
+  background-image: url("/base/MainBG.png");
+}/*# sourceMappingURL=base.css.map */
