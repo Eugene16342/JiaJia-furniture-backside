@@ -3,6 +3,9 @@ import { use_auth_store } from "./stores/index";
 
 import login_page from "./pages/login_page.vue";
 import permission_page from "./pages/premission_page.vue";
+import admin_management from "./components/permission/admin_management.vue";
+import permission_control from "./components/permission/permission_control.vue";
+import permission_log from "./components/permission/permission_log.vue";
 import user_page from "./pages/user_page.vue";
 import product_page from "./pages/product_page.vue";
 import sales_page from "./pages/sales_page.vue";
@@ -24,6 +27,23 @@ const routes = [
     path: "/permissions",
     name: "permission_page",
     component: permission_page,
+    children: [
+      {
+        path: "/permissions/admin_management",
+        name: "admin_management",
+        component: admin_management,
+      },
+      {
+        path: "/permissions/permission_control",
+        name: "permission_control",
+        component: permission_control,
+      },
+      {
+        path: "/permissions/permission_log",
+        name: "permission_log",
+        component: permission_log,
+      },
+    ],
   },
   {
     path: "/users",

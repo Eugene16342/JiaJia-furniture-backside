@@ -12,6 +12,7 @@ export const use_auth_store = defineStore("auth", {
       role_name: null,
     }),
     isLogin: false,
+    menu: [],
   }),
   actions: {
     // 登入
@@ -32,8 +33,7 @@ export const use_auth_store = defineStore("auth", {
 
         this.isLogin = true;
         this.admin = res.data.admin;
-
-        console.log(this.admin);
+        this.menu = res.data.menu;
 
         ElNotification({
           title: "登入成功",
@@ -62,6 +62,7 @@ export const use_auth_store = defineStore("auth", {
         const res = await api.get("auth/check_login");
         this.isLogin = true;
         this.admin = res.data.admin;
+        this.menu = res.data.menu;
         return 200;
       } catch (error) {
         this.isLogin = false;
@@ -71,6 +72,7 @@ export const use_auth_store = defineStore("auth", {
           role_id: null,
           role_name: null,
         };
+        this.menu = [];
         if (error.response?.status === 401) {
           return 401; // 未登入
         }
@@ -109,12 +111,5 @@ export const use_auth_store = defineStore("auth", {
       }
     },
   },
-  getters: {
-    // 判斷身分權限
-    isAdmin: (state) => state.admin.role_id == 1,
-    isNormal: (state) => state.admin.role_id == 2,
-
-    // 高階主管有部分相同權限時
-    // isExecutive: (state) => ["1", "3"].includes(state.admin.role_id),
-  },
+  getters: {},
 });

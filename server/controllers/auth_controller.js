@@ -1,16 +1,30 @@
 const bcrypt = require("bcrypt");
 const db = require("../models");
 
+// 加載 role 選項
+exports.get_role = async (req, res) => {
+  try {
+    const roles = await db.role.findAll({
+      attributes: ["role_id", "role_name"],
+    });
+
+    res.status(200).json(roles);
+  } catch (error) {
+    console.error("獲取 role 選項失敗!", error);
+    res.status(500).json({ message: "無法獲取 role 選項" });
+  }
+};
+
 // 註冊
 exports.register = async (req, res) => {
-  const { admin_id, name, role_id, password } = req.body;
+  const { admin_id, name, role_id } = req.body;
 
-  if (!admin_id || !name || !role_id || !password) {
+  if (!admin_id || !name || !role_id) {
     return res.status(400).json({ error: "請填寫所有欄位" });
   }
 
   try {
-    const hashed_password = await bcrypt.hash(password, 10);
+    const hashed_password = await bcrypt.hash(admin_id, 10);
 
     await db.admin.create({
       admin_id,
@@ -26,6 +40,49 @@ exports.register = async (req, res) => {
   }
 };
 
+// 根據 role_id 取的權限內的功能
+const aside_menu = async (role_id) => {
+  try {
+    const role = await db.role.findOne({
+      where: { role_id },
+      include: [
+        {
+          model: db.permission,
+          as: "permissions",
+          attributes: [
+            "permission_id",
+            "permission_name",
+            "path",
+            "icon",
+            "parent_id",
+          ],
+        },
+      ],
+    });
+
+    if (!role) {
+      throw new Error("此 role 不存在");
+    }
+
+    const permissions = role.permissions || [];
+
+    const menu_tree = (parent_id = null) => {
+      return permissions
+        .filter((perm) => perm.parent_id == parent_id)
+        .map((perm) => ({
+          title: perm.permission_name,
+          path: perm.path,
+          icon: perm.icon,
+          children: menu_tree(perm.permission_id),
+        }));
+    };
+
+    return menu_tree();
+  } catch (error) {
+    console.error("生成側邊選單時出現錯誤!", error);
+  }
+};
+
 // 登入
 exports.login = async (req, res) => {
   const { admin_id, password } = req.body;
@@ -37,6 +94,13 @@ exports.login = async (req, res) => {
   try {
     const admin = await db.admin.findOne({
       where: { admin_id },
+      include: [
+        {
+          model: db.role,
+          as: "role",
+          attributes: ["role_name", "role_id"],
+        },
+      ],
     });
 
     if (!admin) {
@@ -48,7 +112,10 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: "該用戶不存在或密碼錯誤!" });
     }
 
-    const role_name = await translate_position(admin.role_id);
+    const { role_id, role_name } = admin.role;
+
+    // 調用 aside_menu 生成側邊選單
+    const menu = await aside_menu(role_id);
 
     req.session.admin = {
       admin_id,
@@ -57,34 +124,33 @@ exports.login = async (req, res) => {
       role_name,
     };
 
-    res.status(200).json({ message: "登入成功!", admin: req.session.admin });
+    res
+      .status(200)
+      .json({ message: "登入成功!", admin: req.session.admin, menu });
   } catch (error) {
     console.error("登入時發生錯誤!", error);
     res.status(500).json({ message: "登入時發生錯誤，請稍後再試" });
   }
 };
 
-// 翻譯 role_id
-function translate_position(role_id) {
-  switch (role_id) {
-    case "1":
-      return "管理員";
-
-    case "2":
-      return "一般職員";
-
-    default:
-      return "未知角色";
-  }
-}
-
 //持久化前端資訊
-exports.check_login = (req, res) => {
-  // console.log("檢查 Session:", req.session);
-  if (req.session && req.session.admin) {
-    res.status(200).json({ admin: req.session.admin });
-  } else {
-    res.status(401).json({ message: "尚未登入!" });
+exports.check_login = async (req, res) => {
+  try {
+    if (req.session && req.session.admin) {
+      const { role_id } = req.session.admin;
+
+      const menu = await aside_menu(role_id);
+
+      res.status(200).json({
+        admin: req.session.admin,
+        menu,
+      });
+    } else {
+      res.status(401).json({ message: "尚未登入!" });
+    }
+  } catch (error) {
+    console.error("檢查登入狀態時出現錯誤:", error);
+    res.status(500).json({ message: "伺服器錯誤，請稍後再試!" });
   }
 };
 

@@ -29,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
   admin.associate = (models) => {
     admin.belongsTo(models.role, {
       foreignKey: "role_id",
+      as: "role",
       onDelete: "CASCADE",
     });
   };

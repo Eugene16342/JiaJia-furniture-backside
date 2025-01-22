@@ -3,6 +3,9 @@ const auth_controller = require("../controllers/auth_controller");
 const router = express.Router();
 const { isAuthenticated } = require("../middleware/authenticate");
 
+// 加載 role 選項
+router.get("/auth/get_role", auth_controller.get_role);
+
 // 註冊
 router.post("/auth/register", auth_controller.register);
 

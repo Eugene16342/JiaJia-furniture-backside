@@ -9,34 +9,38 @@
         @select="handle_select"
       >
         <div class="who">
-          <div class="position">{{ auth_store.admin.role_name }}</div>
+          <div class="role">{{ auth_store.admin.role_name }}</div>
           <div>{{ auth_store.admin.name }}</div>
         </div>
-        <el-menu-item v-if="auth_store.isAdmin" index="/permissions">
-          <Stamp />
-          <template #title>權限控制</template>
-        </el-menu-item>
-        <el-menu-item index="/users">
-          <User />
-          <template #title>會員操作</template>
-        </el-menu-item>
-        <el-menu-item index="/products">
-          <Box />
-          <template #title>商品操作</template>
-        </el-menu-item>
-        <el-sub-menu v-if="auth_store.isAdmin" index="data">
-          <template #title>
-            <Histogram />
-            <span>數據一覽</span>
-          </template>
-          <el-menu-item index="data_sales">
-            <Crop /> <template #title>銷量/庫存</template></el-menu-item
+
+        <!-- 動態渲染選單 -->
+        <template v-for="item in auth_store.menu" :key="item.path">
+          <el-menu-item
+            v-if="!item.children || item.children.length === 0"
+            :index="item.path"
           >
-          <el-menu-item index="data_revenue"
-            ><DCaret /> <template #title>營業額</template></el-menu-item
-          >
-        </el-sub-menu>
-        <el-menu-item @click="auth_store.logout()" index="logout">
+            <component :is="item.icon" />
+            <template #title>{{ item.title }}</template>
+          </el-menu-item>
+
+          <el-sub-menu v-else :index="item.path">
+            <template #title>
+              <component :is="item.icon" />
+              <span>{{ item.title }}</span>
+            </template>
+            <el-menu-item
+              v-for="subItem in item.children"
+              :key="subItem.path"
+              :index="subItem.path"
+            >
+              <component :is="subItem.icon" />
+              <template #title>{{ subItem.title }}</template>
+            </el-menu-item>
+          </el-sub-menu>
+        </template>
+
+        <!-- 登出 -->
+        <el-menu-item index="logout">
           <Close />
           <template #title>登出</template>
         </el-menu-item>
@@ -44,7 +48,7 @@
     </el-aside>
 
     <!-- 主內容區 -->
-    <el-container>
+    <el-container class="main">
       <router-view></router-view>
     </el-container>
   </el-container>
@@ -60,7 +64,7 @@ const auth_store = use_auth_store();
 
 function handle_select(index) {
   if (index === "logout") {
-    console.log("執行登出操作");
+    auth_store.logout();
   } else {
     // 跳轉到對應路由
     router.push(index);
@@ -78,7 +82,7 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 @import "./assets/colors.scss";
-
+@import "./assets/base.scss";
 .aside {
   background-color: $gray;
 }
@@ -87,13 +91,13 @@ onMounted(async () => {
   user-select: none;
   margin-left: 10px;
   font-weight: 900;
-  .position {
+  .role {
     color: $red;
   }
 }
 
-.el-main {
-  padding: 20px;
+.main {
+  min-width: 600px;
 }
 
 .el-menu-item,

@@ -21,3 +21,28 @@ body {
   font-family: "Zen Old Mincho", Arial, sans-serif;
   background-image: url("/base/MainBG.png");
 }
+
+// 一般 page
+.page {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+// tab 擴展
+.el-tabs {
+  width: 100%;
+}
+// el-tabs 選項
+::v-deep(.el-tabs__item) {
+  font-size: 1.2rem;
+}
+
+// 一般淡藍色按鈕 active
+.el-button.active {
+  background-color: $primary;
+  color: $white;
+  border-color: $primary;
+}
