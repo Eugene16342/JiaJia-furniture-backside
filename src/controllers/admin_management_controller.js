@@ -1,19 +1,11 @@
 import { reactive } from "vue";
 import api from "../utils/api";
 import { ElNotification } from "element-plus";
-/*
-  ElNotification({
-          title: "伺服器錯誤",
-          message: "無法檢查登入狀態，請稍後再試",
-          type: "error",
-        });
-
-*/
 
 // 獲取 role 選項
 export const get_role = async () => {
   try {
-    const res = await api.get("auth/get_role");
+    const res = await api.get("permission/get_role");
     return res.data;
   } catch (error) {
     console.error("獲取 role 選項失敗!", error);
@@ -40,7 +32,7 @@ export const no_blank = (value) => {
 };
 
 // 驗證規則
-export const getRules = () => {
+export const form_rules = () => {
   return reactive({
     admin_id: [
       { required: true, message: "請輸入 ID", trigger: "blur" },
@@ -57,7 +49,12 @@ export const getRules = () => {
 // 提交表單
 export const submit_form = async (formRef, form) => {
   if (!formRef.value) {
-    console.error("表單引用未定義！");
+    console.error("表單不存在！");
+    ElNotification({
+      title: "錯誤",
+      message: "新增人員失敗，請稍後再試！",
+      type: "error",
+    });
     return;
   }
 
@@ -65,7 +62,6 @@ export const submit_form = async (formRef, form) => {
   formRef.value.validate(async (valid) => {
     if (valid) {
       try {
-        // 發送表單數據到後端
         await api.post("auth/register", form);
         ElNotification({
           title: "成功",
@@ -77,15 +73,26 @@ export const submit_form = async (formRef, form) => {
         formRef.value.resetFields();
       } catch (error) {
         console.error("新增人員失敗！", error);
-        ElNotification({
-          title: "錯誤",
-          message: "新增人員失敗!",
-          type: "error",
-        });
+
+        // ID 重複
+        if (error.response && error.response.status === 409) {
+          ElNotification({
+            title: "錯誤",
+            message: "此 ID 已被註冊!",
+            type: "error",
+          });
+        } else {
+          // 其他問題
+          ElNotification({
+            title: "錯誤",
+            message: "新增人員失敗，請稍後再試！",
+            type: "error",
+          });
+        }
       }
     } else {
       ElNotification({
-        title: "表單驗證失敗",
+        title: "錯誤",
         message: "請檢查所有必填項！",
         type: "warning",
       });

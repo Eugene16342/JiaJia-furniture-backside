@@ -3,6 +3,8 @@ const session = require("express-session");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
 const auth_routes = require("./routes/auth");
+const admin_routes = require("./routes/admin");
+const permission_routes = require("./routes/permission");
 const cors = require("cors");
 
 dotenv.config();
@@ -39,5 +41,7 @@ app.use(
 
 // 註冊路由
 app.use("/api", auth_routes);
+app.use("/api", permission_routes);
+app.use("/api", admin_routes);
 
 module.exports = app; // 將 app 導出供 server.js 使用

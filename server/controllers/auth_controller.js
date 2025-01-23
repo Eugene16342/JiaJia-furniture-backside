@@ -1,20 +1,6 @@
 const bcrypt = require("bcrypt");
 const db = require("../models");
 
-// 加載 role 選項
-exports.get_role = async (req, res) => {
-  try {
-    const roles = await db.role.findAll({
-      attributes: ["role_id", "role_name"],
-    });
-
-    res.status(200).json(roles);
-  } catch (error) {
-    console.error("獲取 role 選項失敗!", error);
-    res.status(500).json({ message: "無法獲取 role 選項" });
-  }
-};
-
 // 註冊
 exports.register = async (req, res) => {
   const { admin_id, name, role_id } = req.body;
@@ -24,6 +10,11 @@ exports.register = async (req, res) => {
   }
 
   try {
+    const id_exist = await db.admin.findOne({ where: { admin_id } });
+    if (id_exist) {
+      return res.status(409).json({ message: "此 ID 已存在!" });
+    }
+
     const hashed_password = await bcrypt.hash(admin_id, 10);
 
     await db.admin.create({
@@ -34,7 +25,7 @@ exports.register = async (req, res) => {
     });
 
     res.status(200).json({ message: "註冊成功!" });
-  } catch {
+  } catch (error) {
     console.error("註冊失敗!", error);
     res.status(500).json({ error: "伺服器錯誤，請稍後再試" });
   }

@@ -30,6 +30,17 @@ body {
   align-items: center;
 }
 
+.component {
+  margin-top: 20px;
+  width: 100%;
+  height: 100%;
+}
+.component .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .el-tabs {
   width: 100%;
 }

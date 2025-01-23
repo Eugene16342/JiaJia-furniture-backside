@@ -2,12 +2,16 @@ const express = require("express");
 const auth_controller = require("../controllers/auth_controller");
 const router = express.Router();
 const { isAuthenticated } = require("../middleware/authenticate");
+// 登入 持久畫 登出 不檢查權限
 
-// 加載 role 選項
-router.get("/auth/get_role", auth_controller.get_role);
+const permission_id = 1;
 
 // 註冊
-router.post("/auth/register", auth_controller.register);
+router.post(
+  "/auth/register",
+  isAuthenticated(permission_id),
+  auth_controller.register
+);
 
 // 登入
 router.post("/auth/login", auth_controller.login);
