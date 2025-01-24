@@ -1,13 +1,20 @@
 <template>
   <div class="component">
     <div class="container">
-      <!-- 名稱 -->
-      <el-input
+      <!-- 選擇 -->
+      <el-select
         v-model="name"
         style="width: 300px"
-        placeholder="請輸入角色名稱"
-        maxlength="10"
-      />
+        placeholder="請選擇角色名稱"
+        clearable
+      >
+        <el-option
+          v-for="role in roles"
+          :key="role.id"
+          :label="role.name"
+          :value="role.name"
+        />
+      </el-select>
 
       <!-- 轉換容器 -->
       <el-transfer
@@ -35,27 +42,25 @@
       </el-transfer>
 
       <!-- 建立按鈕 -->
-      <el-button type="primary" @click="create_new_role">建立</el-button>
+      <el-button type="primary" @click="create_new_role">修改</el-button>
     </div>
   </div>
 </template>
 
 <script setup>
-import {
-  name,
-  all_permission,
-  chose_permission,
-  get_all_permission_option,
-  create_new_role,
-} from "../../controllers/permission_controller";
-import { onMounted } from "vue";
+import { ref, onMounted } from "vue";
 
-onMounted(async () => {
-  await get_all_permission_option();
-});
+const name = ref("");
+
+const roles = ref([
+  { id: 1, name: "管理員" },
+  { id: 2, name: "編輯者" },
+  { id: 3, name: "訪客" },
+]);
 </script>
 
 <style lang="scss" scoped>
+@import "../../assets/colors.scss";
 .transfer_container {
   margin: 40px 0;
 }

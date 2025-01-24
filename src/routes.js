@@ -34,9 +34,10 @@ const routes = [
           import("./components/permission/permission_control.vue"),
       },
       {
-        path: "/permissions/permission_log",
-        name: "permission_log",
-        component: () => import("./components/permission/permission_log.vue"),
+        path: "/permissions/change_permission",
+        name: "change_permission",
+        component: () =>
+          import("./components/permission/change_permission.vue"),
       },
     ],
   },

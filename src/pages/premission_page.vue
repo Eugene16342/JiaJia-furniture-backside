@@ -21,9 +21,9 @@
         <el-button
           type="primary"
           :class="{ active: active === 3 }"
-          @click="to('permission_control', 3)"
+          @click="to('change_permission', 3)"
           plain
-          >更改權限</el-button
+          >更改角色權限</el-button
         >
         <el-button
           type="primary"

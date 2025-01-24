@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
     "role_permission",
     {
       role_id: {
-        type: DataTypes.CHAR(3),
+        type: DataTypes.INTEGER,
         primaryKey: true,
       },
       permission_id: {

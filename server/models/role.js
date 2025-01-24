@@ -3,8 +3,9 @@ module.exports = (sequelize, DataTypes) => {
     "role",
     {
       role_id: {
-        type: DataTypes.CHAR(3),
+        type: DataTypes.INTEGER,
         primaryKey: true,
+        autoIncrement: true,
       },
       role_name: {
         type: DataTypes.STRING(10),
