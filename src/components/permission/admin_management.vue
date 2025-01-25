@@ -56,6 +56,7 @@
 import { ref, onMounted } from "vue";
 
 import {
+  roles,
   get_role,
   getForm,
   form_rules,
@@ -64,7 +65,6 @@ import {
   submit_form,
 } from "../../controllers/admin_management_controller";
 
-const roles = ref([]);
 const form = getForm();
 const rules = form_rules();
 const ruleFormRef = ref(null);
@@ -85,8 +85,7 @@ const submit = () => {
 };
 
 onMounted(async () => {
-  // 獲取 role 選項
-  roles.value = await get_role();
+  await get_role();
 });
 </script>
 

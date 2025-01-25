@@ -1,7 +1,6 @@
 const express = require("express");
 const session = require("express-session");
 const dotenv = require("dotenv");
-const bodyParser = require("body-parser");
 const auth_routes = require("./routes/auth");
 const admin_routes = require("./routes/admin");
 const permission_routes = require("./routes/permission");
@@ -20,9 +19,9 @@ app.use(
   })
 );
 
-app.use(bodyParser.json());
+app.use(express.json());
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 
 // 設置 Session
 app.use(

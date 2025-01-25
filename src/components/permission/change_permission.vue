@@ -1,24 +1,24 @@
 <template>
   <div class="component">
     <div class="container">
-      <!-- 選擇 -->
       <el-select
-        v-model="name"
-        style="width: 300px"
-        placeholder="請選擇角色名稱"
+        class="select"
+        v-model="select_role"
+        placeholder="選擇一個身分"
         clearable
+        @change="role_change"
       >
         <el-option
           v-for="role in roles"
-          :key="role.id"
-          :label="role.name"
-          :value="role.name"
+          :key="role.role_id"
+          :label="role.role_name"
+          :value="role.role_id"
         />
       </el-select>
 
       <!-- 轉換容器 -->
       <el-transfer
-        v-model="chose_permission"
+        v-model="owned_permissions"
         :data="all_permission"
         :titles="['所有權限', '已選權限']"
         class="transfer_container"
@@ -42,27 +42,38 @@
       </el-transfer>
 
       <!-- 建立按鈕 -->
-      <el-button type="primary" @click="create_new_role">修改</el-button>
+      <el-button type="primary" @click="save_change()">修改</el-button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { onMounted } from "vue";
+import { roles, get_role } from "../../controllers/admin_management_controller";
+import {
+  all_permission,
+  get_all_permission_option,
+} from "../../controllers/permission_controller";
+import {
+  select_role,
+  owned_permissions,
+  role_change,
+  save_change,
+} from "../../controllers/change_permission_controller";
 
-const name = ref("");
-
-const roles = ref([
-  { id: 1, name: "管理員" },
-  { id: 2, name: "編輯者" },
-  { id: 3, name: "訪客" },
-]);
+onMounted(async () => {
+  await get_role();
+  await get_all_permission_option();
+});
 </script>
 
 <style lang="scss" scoped>
 @import "../../assets/colors.scss";
 .transfer_container {
   margin: 40px 0;
+}
+.select {
+  width: 300px;
 }
 
 @media (min-width: 1215px) {
