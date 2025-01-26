@@ -1,5 +1,5 @@
 import { ref, reactive } from "vue";
-import api from "../utils/api";
+import api from "../../utils/api";
 import { ElNotification } from "element-plus";
 
 export const roles = ref([]);
@@ -7,7 +7,7 @@ export const roles = ref([]);
 // 獲取 role 選項
 export const get_role = async () => {
   try {
-    const res = await api.get("permission/get_role");
+    const res = await api.get("/permission/get_role");
     roles.value = res.data;
   } catch (error) {
     console.error("獲取 role 選項失敗!", error);

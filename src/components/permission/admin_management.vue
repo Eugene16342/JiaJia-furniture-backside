@@ -63,7 +63,7 @@ import {
   no_blank,
   eng_num_only,
   submit_form,
-} from "../../controllers/admin_management_controller";
+} from "../../controllers/permission/admin_management_controller";
 
 const form = getForm();
 const rules = form_rules();

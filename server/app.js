@@ -1,9 +1,11 @@
 const express = require("express");
 const session = require("express-session");
 const dotenv = require("dotenv");
+const { isAuthenticated } = require("./middleware/authenticate");
 const auth_routes = require("./routes/auth");
 const admin_routes = require("./routes/admin");
 const permission_routes = require("./routes/permission");
+const user_routes = require("./routes/user");
 const cors = require("cors");
 
 dotenv.config();
@@ -39,8 +41,9 @@ app.use(
 );
 
 // 註冊路由
-app.use("/api", auth_routes);
-app.use("/api", permission_routes);
-app.use("/api", admin_routes);
+app.use("/api/auth", auth_routes);
+app.use("/api/permission", isAuthenticated(1), permission_routes);
+app.use("/api/admin", isAuthenticated(1), admin_routes);
+app.use("/api/user", user_routes);
 
 module.exports = app; // 將 app 導出供 server.js 使用

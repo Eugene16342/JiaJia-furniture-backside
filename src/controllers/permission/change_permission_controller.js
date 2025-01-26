@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import api from "../utils/api";
+import api from "../../utils/api";
 import { ElNotification } from "element-plus";
 /*
  ElNotification({

@@ -49,17 +49,20 @@
 
 <script setup>
 import { onMounted } from "vue";
-import { roles, get_role } from "../../controllers/admin_management_controller";
+import {
+  roles,
+  get_role,
+} from "../../controllers/permission/admin_management_controller";
 import {
   all_permission,
   get_all_permission_option,
-} from "../../controllers/permission_controller";
+} from "../../controllers/permission/permission_controller";
 import {
   select_role,
   owned_permissions,
   role_change,
   save_change,
-} from "../../controllers/change_permission_controller";
+} from "../../controllers/permission/change_permission_controller";
 
 onMounted(async () => {
   await get_role();

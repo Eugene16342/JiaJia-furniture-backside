@@ -47,7 +47,7 @@ import {
   chose_permission,
   get_all_permission_option,
   create_new_role,
-} from "../../controllers/permission_controller";
+} from "../../controllers/permission/permission_controller";
 import { onMounted } from "vue";
 
 onMounted(async () => {

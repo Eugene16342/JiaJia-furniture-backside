@@ -1,5 +1,5 @@
 import { ref, computed } from "vue";
-import api from "../utils/api";
+import api from "../../utils/api";
 import { ElNotification } from "element-plus";
 
 // 存放管理員資料

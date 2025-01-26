@@ -91,11 +91,11 @@ import {
   filter_admin_table,
   save_admin_change,
   delete_admin,
-} from "../../controllers/search_admin_controller";
-import { get_role } from "../../controllers/admin_management_controller";
-
-// 儲存角色選項
-const roles = ref([]);
+} from "../../controllers/permission/search_admin_controller";
+import {
+  roles,
+  get_role,
+} from "../../controllers/permission/admin_management_controller";
 
 // 搜索框的輸入值
 const search = ref("");
@@ -137,7 +137,7 @@ const handle_delete = async (row) => {
 const filter_table_data = filter_admin_table(table_data, roles, search);
 
 onMounted(async () => {
-  roles.value = await get_role();
+  await get_role();
   await get_all_admin();
 });
 </script>

@@ -8,18 +8,18 @@ const permission_id = 1;
 
 // 註冊
 router.post(
-  "/auth/register",
+  "/register",
   isAuthenticated(permission_id),
   auth_controller.register
 );
 
 // 登入
-router.post("/auth/login", auth_controller.login);
+router.post("/login", auth_controller.login);
 
 // 持久化前端數據
-router.get("/auth/check_login", auth_controller.check_login);
+router.get("/check_login", auth_controller.check_login);
 
 // 登出
-router.post("/auth/logout", auth_controller.logout);
+router.post("/logout", auth_controller.logout);
 
 module.exports = router;

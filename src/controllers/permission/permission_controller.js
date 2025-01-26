@@ -1,5 +1,5 @@
 import { ref, reactive } from "vue";
-import api from "../utils/api";
+import api from "../../utils/api";
 import { ElNotification } from "element-plus";
 /**
  
@@ -10,7 +10,7 @@ import { ElNotification } from "element-plus";
     });
 
  */
-
+export const chose_permission = ref([]);
 export const all_permission = ref([]);
 export const name = ref("");
 
