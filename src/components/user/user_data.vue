@@ -9,6 +9,7 @@
           placeholder="請輸入關鍵字"
           class="input-with-select"
           clearable
+          @keyup.enter="search"
         >
           <template #prepend>
             <el-button icon="Search" @click="search" />
@@ -39,7 +40,12 @@
               </p>
               <p>連絡電話 : {{ props.row.user_detail.phone }}</p>
               <p>地址 : {{ props.row.user_detail.address }}</p>
-              <el-button type="primary" round>查看訂單詳情</el-button>
+              <el-button
+                type="primary"
+                round
+                @click="view_user_order(props.row.user_name)"
+                >查看訂單詳情</el-button
+              >
             </div>
           </template>
         </el-table-column>
@@ -54,7 +60,7 @@
 
       <!-- 分頁 -->
       <el-pagination
-        style="margin-top: 50px"
+        style="margin: 50px 0"
         layout="prev, pager, next"
         :total="total_data"
         :current-page="current_page"
@@ -79,6 +85,20 @@ import {
 } from "../../controllers/user/user_controller";
 
 import { onMounted } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+// 導向選定使用者的訂單
+function view_user_order(user_account) {
+  router.push({
+    path: "order_data",
+    query: {
+      user_name: user_account,
+      select: "user_name",
+    },
+  });
+}
 
 onMounted(async () => {
   await get_user_data();

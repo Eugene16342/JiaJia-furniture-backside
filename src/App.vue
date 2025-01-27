@@ -98,6 +98,7 @@ onMounted(async () => {
 
 .main {
   min-width: 600px;
+  overflow-y: auto;
 }
 
 .el-menu-item,

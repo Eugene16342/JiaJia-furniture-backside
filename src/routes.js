@@ -74,6 +74,26 @@ const routes = [
     path: "/products",
     name: "product_page",
     component: () => import("./pages/product_page.vue"),
+    children: [
+      {
+        // 商品操作 => 商品一覽
+        path: "/products/product_data",
+        name: "product_data",
+        component: () => import("./components/product/prouct_data.vue"),
+      },
+      {
+        // 商品操作 => 新增商品
+        path: "/products/create_product",
+        name: "create_product",
+        component: () => import("./components/product/create_product.vue"),
+      },
+      {
+        // 商品操作 => 編輯商品
+        path: "/products/edit_product",
+        name: "edit_product",
+        component: () => import("./components/product/edit_product.vue"),
+      },
+    ],
   },
   {
     // 數據分析 => 銷量

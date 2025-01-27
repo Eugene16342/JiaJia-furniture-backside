@@ -6,6 +6,7 @@ const auth_routes = require("./routes/auth");
 const admin_routes = require("./routes/admin");
 const permission_routes = require("./routes/permission");
 const user_routes = require("./routes/user");
+const product_routes = require("./routes/product");
 const cors = require("cors");
 
 dotenv.config();
@@ -44,6 +45,7 @@ app.use(
 app.use("/api/auth", auth_routes);
 app.use("/api/permission", isAuthenticated(1), permission_routes);
 app.use("/api/admin", isAuthenticated(1), admin_routes);
-app.use("/api/user", user_routes);
+app.use("/api/user", isAuthenticated(2), user_routes);
+app.use("/api/product", product_routes);
 
 module.exports = app; // 將 app 導出供 server.js 使用

@@ -126,6 +126,18 @@ db.order_items.belongsTo(db.orders, {
   foreignKey: "order_id",
 });
 
+db.orders.belongsTo(db.users, {
+  foreignKey: "user_name",
+  targetKey: "user_name",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
+
+db.users.hasMany(db.orders, {
+  foreignKey: "user_name",
+  sourceKey: "user_name",
+});
+
 db.order_items.belongsTo(db.products_info, {
   foreignKey: "product_id",
   as: "order_items_belong_product_info",

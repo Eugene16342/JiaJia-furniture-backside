@@ -23,16 +23,36 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
 
 const router = useRouter();
+const route = useRoute();
 const active = ref(null);
 
 const to = (path, view) => {
   active.value = view;
   router.push({ name: path });
 };
+
+const update_active = () => {
+  if (route.name === "user_data") {
+    active.value = 1;
+  } else if (route.name === "order_data") {
+    active.value = 2;
+  }
+};
+
+watch(
+  () => route.name,
+  () => {
+    update_active();
+  }
+);
+
+onMounted(() => {
+  update_active();
+});
 </script>
 
 <style lang="scss" scoped></style>
