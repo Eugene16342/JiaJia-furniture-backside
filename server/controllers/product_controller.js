@@ -1,5 +1,5 @@
 const db = require("../models");
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 const { upload_image } = require("../utils/upload");
 
 ///////////////////////////////   商品一覽   ///////////////////////////////////////////////////////////
@@ -54,6 +54,7 @@ exports.get_product_data = async (req, res) => {
       ],
       limit: parseInt(limit),
       offset: parseInt(offset),
+      order: [["product_id"]],
       distinct: true,
     });
 
@@ -183,6 +184,7 @@ exports.create_product = async (req, res) => {
       await db.product_colors.bulkCreate(product_color, { transaction });
     }
 
+    // 獲取種類名稱 用於命名圖片路徑
     const category_data = await db.categories.findOne({
       where: { category_id: category },
       attributes: ["name"],
@@ -193,19 +195,19 @@ exports.create_product = async (req, res) => {
     // 上傳圖片並新增圖片路徑
     const image_paths = [];
     for (let i = 0; i < img_list.length; i++) {
-      const base64Image = img_list[i];
-      const imageUrl = await upload_image(
-        base64Image,
+      const base64_image = img_list[i];
+      const image_url = await upload_image(
+        base64_image,
         category_name,
         product_id
       );
-      image_paths.push(imageUrl);
+      image_paths.push(image_url);
     }
 
     // 在 product_images 插入圖片路徑
     const image_records = image_paths.map((url) => ({
       product_id,
-      image_url: url,
+      img_url: url,
     }));
 
     await db.product_images.bulkCreate(image_records, { transaction });
@@ -218,4 +220,89 @@ exports.create_product = async (req, res) => {
     res.status(500).json({ message: "新增商品失敗!" });
   }
 };
+
 ///////////////////////////////   編輯商品   ///////////////////////////////////////////////////////////
+
+// 獲取特定商品資訊用以編輯
+exports.get_product_info = async (req, res) => {
+  try {
+    const { product_id } = req.params;
+
+    const product = await db.products_info.findOne({
+      where: { product_id },
+      attributes: [
+        "product_id",
+        "name",
+        "description",
+        "materials",
+        "length",
+        "width",
+        "height",
+        "price",
+        "category_id",
+      ],
+      include: [
+        {
+          model: db.categories,
+          as: "category_id_belong_info",
+          attributes: ["name"],
+        },
+        {
+          model: db.product_colors,
+          as: "product_id_hasmany_color",
+          attributes: ["color_id"],
+        },
+        {
+          model: db.stocks,
+          as: "product_stock",
+          attributes: ["stock"],
+        },
+        {
+          model: db.product_images,
+          as: "product_id_hasmany_img",
+          attributes: ["img_url"],
+        },
+      ],
+    });
+
+    if (!product) {
+      return res.status(404).json({ message: "找不到此商品!" });
+    }
+
+    const category_name = product.category_id_belong_info.name;
+
+    // 整理回傳的資料
+    const res_data = {
+      ...product.toJSON(),
+      colors: product.product_id_hasmany_color.map((color) => color.color_id),
+      quantity: product.product_stock.stock,
+      img_list: product.product_id_hasmany_img.map(
+        (img) =>
+          `/product/${category_name}/${category_name}${product_id}/${img.img_url}`
+      ),
+    };
+
+    // 避免資料重複
+    delete res_data.product_id_hasmany_color;
+    delete res_data.product_stock;
+    delete res_data.product_id_hasmany_img;
+    delete res_data.category_id_belong_info;
+
+    res.json(res_data);
+  } catch (error) {
+    console.error("獲取商品資訊失敗!", error);
+
+    res.status(500).json({ message: "獲取產品資訊失敗!" });
+  }
+};
+
+// 使用覆蓋編輯
+exports.edit_prodict_info = async (req, res) => {
+  try {
+    const { product_id } = req.params;
+    const new_data = req.body;
+  } catch (error) {
+    console.error("編輯商品資訊失敗!", error);
+    res.status(500).json({ message: "編輯商品資訊失敗!" });
+  }
+};

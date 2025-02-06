@@ -36,6 +36,14 @@
                 </el-tag>
               </div>
               <div>{{ props.row.description }}</div>
+
+              <!-- 新增商品按鈕 -->
+              <el-button
+                style="display: flex; margin: auto"
+                type="primary"
+                @click="edit_product(props.row.product_id)"
+                >編輯商品</el-button
+              >
             </div>
           </template>
         </el-table-column>
@@ -63,6 +71,7 @@
 
 <script setup>
 import { onMounted } from "vue";
+import { useRouter } from "vue-router";
 import {
   keyword,
   product_data,
@@ -73,6 +82,12 @@ import {
   get_product_data,
   search,
 } from "../../controllers/product/product_data";
+
+const router = useRouter();
+
+const edit_product = (product_id) => {
+  router.push({ path: `/products/edit_product/${product_id}` });
+};
 
 onMounted(async () => {
   await get_product_data();

@@ -89,9 +89,10 @@ const routes = [
       },
       {
         // 商品操作 => 編輯商品
-        path: "/products/edit_product",
+        path: "/products/edit_product/:product_id",
         name: "edit_product",
         component: () => import("./components/product/edit_product.vue"),
+        props: true,
       },
     ],
   },

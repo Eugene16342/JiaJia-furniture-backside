@@ -9,17 +9,11 @@
           plain
           >商品一覽</el-button
         >
+
         <el-button
           type="primary"
           :class="{ active: active === 2 }"
-          @click="to('edit_product', 2)"
-          plain
-          >編輯商品</el-button
-        >
-        <el-button
-          type="primary"
-          :class="{ active: active === 3 }"
-          @click="to('create_product', 3)"
+          @click="to('create_product', 2)"
           plain
           >新增商品</el-button
         >

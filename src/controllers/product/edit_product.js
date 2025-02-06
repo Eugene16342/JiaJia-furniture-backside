@@ -3,6 +3,7 @@ import api from "../../utils/api";
 import { ElNotification } from "element-plus";
 
 export const form = ref({
+  product_id: "",
   name: "",
   category: "",
   material: "",
@@ -16,6 +17,38 @@ export const form = ref({
   img_list: [],
 });
 
+// 獲取產品資訊
+export const get_product_info = async (product_id) => {
+  try {
+    const res = await api.get(`/product/get_product_info/${product_id}`);
+
+    form.value = {
+      product_id: res.data.product_id,
+      name: res.data.name,
+      category: res.data.category_id,
+      material: res.data.materials,
+      length: res.data.length,
+      width: res.data.width,
+      height: res.data.height,
+      colors: res.data.colors,
+      description: res.data.description,
+      price: res.data.price,
+      quantity: res.data.quantity,
+      img_list: res.data.img_list.map((img) => ({
+        name: img.split("/").pop(),
+        url: img,
+      })),
+    };
+  } catch (error) {
+    console.error("獲取商品資訊失敗!", error);
+    ElNotification({
+      title: "錯誤",
+      message: "獲取產品資訊失敗",
+      type: "error",
+    });
+  }
+};
+
 // 種類選項
 export const category_option = ref([]);
 // 顏色選項
@@ -25,28 +58,6 @@ export const colors_opnition = ref([]);
 export const show_img = ref(false);
 // 預覽圖片位置
 export const img_url = ref("");
-
-// 獲取種類選項
-export const get_product_category_option = async () => {
-  try {
-    const res = await api.get("/product/get_product_category");
-
-    category_option.value = res.data;
-  } catch (error) {
-    console.error("獲取種類選項失敗!", error);
-  }
-};
-
-// 獲取顏色選項
-export const get_colors_option = async () => {
-  try {
-    const res = await api.get("/product/get_colors");
-
-    colors_opnition.value = res.data;
-  } catch (error) {
-    console.error("獲取顏色選項失敗!", error);
-  }
-};
 
 // 放大預覽圖
 export const watch_img = (file) => {
@@ -177,8 +188,6 @@ export const create_product = async () => {
       message: "商品新增成功!",
       type: "success",
     });
-
-    reset_form();
   } catch (error) {
     console.error("新增商品失敗!", error);
     ElNotification({
@@ -187,20 +196,4 @@ export const create_product = async () => {
       type: "error",
     });
   }
-};
-
-// 清空表單
-const reset_form = () => {
-  form.value = {
-    name: "",
-    material: "",
-    length: "",
-    width: "",
-    height: "",
-    colors: [],
-    description: "",
-    price: "",
-    quantity: "",
-    img_list: [],
-  };
 };

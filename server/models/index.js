@@ -148,6 +148,16 @@ db.order_items.belongsTo(db.colors, {
   as: "order_item_belong_colors",
 });
 
+// 產品資訊和庫存的關聯
+db.products_info.hasOne(db.stocks, {
+  foreignKey: "product_id",
+  as: "product_stock",
+});
+
+db.stocks.belongsTo(db.products_info, {
+  foreignKey: "product_id",
+});
+
 // 遍歷模型以應用關聯
 Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {
