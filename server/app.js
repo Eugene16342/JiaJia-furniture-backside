@@ -7,6 +7,8 @@ const admin_routes = require("./routes/admin");
 const permission_routes = require("./routes/permission");
 const user_routes = require("./routes/user");
 const product_routes = require("./routes/product");
+const data_routers = require("./routes/data");
+const revenue_routers = require("./routes/revenue");
 const cors = require("cors");
 
 dotenv.config();
@@ -24,7 +26,6 @@ app.use(
 
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
-
 app.use(express.urlencoded({ extended: true }));
 
 // 設置 Session
@@ -47,6 +48,8 @@ app.use("/api/auth", auth_routes);
 app.use("/api/permission", isAuthenticated(1), permission_routes);
 app.use("/api/admin", isAuthenticated(1), admin_routes);
 app.use("/api/user", isAuthenticated(2), user_routes);
-app.use("/api/product", product_routes);
+app.use("/api/product", isAuthenticated(3), product_routes);
+app.use("/api/data", data_routers);
+app.use("/api/revenue", revenue_routers);
 
 module.exports = app; // 將 app 導出供 server.js 使用

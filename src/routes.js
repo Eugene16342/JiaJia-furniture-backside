@@ -101,12 +101,28 @@ const routes = [
     path: "/data_sales",
     name: "sales_page",
     component: () => import("./pages/sales_page.vue"),
+    children: [
+      {
+        // 商品操作 => 商品一覽
+        path: "/data_sales/product_sales",
+        name: "product_sales",
+        component: () => import("./components/data/sales.vue"),
+      },
+    ],
   },
   {
     // 數據分析 => 營業額
     path: "/data_revenue",
     name: "revenue_page",
     component: () => import("./pages/revenue_page.vue"),
+    children: [
+      {
+        // 商品操作 => 商品一覽
+        path: "/data_revenue/revenue",
+        name: "revenue",
+        component: () => import("./components/data/revenue.vue"),
+      },
+    ],
   },
 ];
 
