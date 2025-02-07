@@ -178,7 +178,7 @@
         </el-row>
       </el-form>
       <!-- 新增商品按鈕 -->
-      <el-button type="primary" @click="create_product">新增商品</el-button>
+      <el-button type="primary" @click="edit_product">完成編輯</el-button>
     </div>
   </div>
 </template>
@@ -190,17 +190,17 @@ import {
   colors_opnition,
   get_product_category_option,
   get_colors_option,
-} from "../../controllers/product/create_product";
-import {
-  form,
-  product_form,
   rules,
   show_img,
   img_url,
   watch_img,
   remove_img,
   check_file,
-  create_product,
+} from "../../controllers/product/create_product";
+import {
+  form,
+  product_form,
+  edit_product,
   get_product_info,
 } from "../../controllers/product/edit_product";
 

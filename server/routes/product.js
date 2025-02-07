@@ -21,6 +21,6 @@ router.get(
 );
 
 // 編輯商品資訊
-router.put("/edit_prodict_info", product_controller.edit_prodict_info);
+router.put("/edit_product_info", product_controller.edit_product_info);
 
 module.exports = router;

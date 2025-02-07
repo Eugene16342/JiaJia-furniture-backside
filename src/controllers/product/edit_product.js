@@ -1,4 +1,4 @@
-import { ref, nextTick } from "vue";
+import { ref } from "vue";
 import api from "../../utils/api";
 import { ElNotification } from "element-plus";
 
@@ -54,74 +54,6 @@ export const category_option = ref([]);
 // 顏色選項
 export const colors_opnition = ref([]);
 
-// 預覽圖片
-export const show_img = ref(false);
-// 預覽圖片位置
-export const img_url = ref("");
-
-// 放大預覽圖
-export const watch_img = (file) => {
-  img_url.value = file.url;
-  show_img.value = true;
-};
-
-// 刪除圖片
-export const remove_img = (file) => {
-  form.value.img_list = form.value.img_list.filter(
-    (item) => item.uid !== file.uid
-  );
-};
-
-// 檢查檔案
-export const check_file = (file, file_list) => {
-  const allowed_types = ["image/jpeg", "image/png"];
-  const allowed_extensions = ["jpg", "jpeg", "png"];
-  const max_size = 2 * 1024 * 1024; // 限制 2MB
-
-  // 檢查副檔名
-  const file_extension = file.name.split(".").pop().toLowerCase();
-  const file_type = file.raw ? file.raw.type : file.type;
-
-  // 檢查格式
-  if (
-    !allowed_types.includes(file_type) &&
-    !allowed_extensions.includes(file_extension)
-  ) {
-    ElNotification({
-      title: "錯誤",
-      message: "只接受 JPG 和 PNG 格式!",
-      type: "error",
-    });
-
-    // 從 img_list 移除不符合的檔案
-    nextTick(() => {
-      form.value.img_list = form.value.img_list.filter(
-        (f) => f.uid !== file.uid
-      );
-    });
-
-    return;
-  }
-
-  // 檢查大小
-  if (file.size > max_size) {
-    ElNotification({
-      title: "錯誤",
-      message: `圖片大小不能超過 2MB !`,
-      type: "error",
-    });
-
-    nextTick(() => {
-      form.value.img_list = form.value.img_list.filter(
-        (f) => f.uid !== file.uid
-      );
-    });
-
-    return;
-  }
-  form.value.img_list = [...file_list];
-};
-
 export const product_form = ref(null);
 
 // 驗證規則
@@ -140,9 +72,14 @@ export const rules = ref({
   ],
 });
 
-// 轉換圖片為 base64
+// 轉換圖片為 base64 如果已經是 就不必轉換
 const convert_img = (file) => {
   return new Promise((resolve, reject) => {
+    if (!file || !(file instanceof Blob)) {
+      reject(new Error("無效的文件類型"));
+      return;
+    }
+
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => resolve(reader.result);
@@ -151,7 +88,7 @@ const convert_img = (file) => {
 };
 
 // 發出請求
-export const create_product = async () => {
+export const edit_product = async () => {
   try {
     const valid = await product_form.value.validate();
     if (!valid) {
@@ -172,27 +109,33 @@ export const create_product = async () => {
       return;
     }
 
-    // 先把所有圖片轉成 Base64
+    // 確保只有新上傳的檔案轉成 Base64
     const base64_images = await Promise.all(
-      form.value.img_list.map((file) => convert_img(file.raw))
+      form.value.img_list.map((file) => {
+        if (file.raw) {
+          return convert_img(file.raw);
+        } else {
+          return file.url; // 如果是已存在的圖片，直接傳 URL
+        }
+      })
     );
 
     // 送出商品資訊
-    const res = await api.post("/product/create_product", {
+    const res = await api.put("/product/edit_product_info", {
       ...form.value,
       img_list: base64_images,
     });
 
     ElNotification({
       title: "成功",
-      message: "商品新增成功!",
+      message: "商品編輯成功!",
       type: "success",
     });
   } catch (error) {
     console.error("新增商品失敗!", error);
     ElNotification({
       title: "錯誤",
-      message: "新增商品失敗，請稍後再試!",
+      message: "編輯商品失敗，請稍後再試!",
       type: "error",
     });
   }

@@ -1,6 +1,6 @@
 const db = require("../models");
-const { Op, where } = require("sequelize");
-const { upload_image } = require("../utils/upload");
+const { Op } = require("sequelize");
+const { upload_image, clear_image } = require("../utils/upload");
 
 ///////////////////////////////   商品一覽   ///////////////////////////////////////////////////////////
 
@@ -297,11 +297,125 @@ exports.get_product_info = async (req, res) => {
 };
 
 // 使用覆蓋編輯
-exports.edit_prodict_info = async (req, res) => {
+exports.edit_product_info = async (req, res) => {
+  const transaction = await db.sequelize.transaction();
   try {
-    const { product_id } = req.params;
-    const new_data = req.body;
+    const {
+      product_id,
+      name,
+      category,
+      material,
+      length,
+      width,
+      height,
+      colors,
+      description,
+      price,
+      quantity,
+      img_list,
+    } = req.body;
+
+    console.log("看我!", req.body);
+    // 檢查必要欄位
+    if (
+      !product_id ||
+      !name ||
+      !category ||
+      !material ||
+      !length ||
+      !width ||
+      !height ||
+      !description ||
+      !price ||
+      !quantity ||
+      !img_list ||
+      img_list.length === 0
+    ) {
+      return res.status(400).json({ message: "缺少必要商品資訊!" });
+    }
+
+    // 更新 products_info
+    await db.products_info.update(
+      {
+        name,
+        category_id: category,
+        materials: material,
+        length,
+        width,
+        height,
+        description,
+        price,
+        quantity,
+      },
+      {
+        where: { product_id },
+        transaction,
+      }
+    );
+
+    //  sotcks 更新商品數量
+    await db.stocks.update(
+      {
+        stock: quantity,
+      },
+      {
+        where: { product_id },
+        transaction,
+      }
+    );
+
+    //   product_colors 更新商品顏色
+    if (Array.isArray(colors)) {
+      // 刪除原有的顏色
+      await db.product_colors.destroy({
+        where: { product_id },
+        transaction,
+      });
+
+      // 插入新的顏色
+      if (colors.length > 0) {
+        const product_color = colors.map((color_id) => ({
+          product_id,
+          color_id,
+        }));
+
+        await db.product_colors.bulkCreate(product_color, { transaction });
+      }
+    }
+
+    // 處理圖片
+    const category_data = await db.categories.findOne({
+      where: { category_id: category },
+      attributes: ["name"],
+    });
+
+    const category_name = category_data.name;
+
+    // 清除資料夾內的所有圖片
+    await clear_image(category_name, product_id);
+
+    // 重新上傳圖片
+    const new_image_path = [];
+    for (const img of img_list) {
+      const image_url = await upload_image(img, category_name, product_id);
+      new_image_path.push(image_url);
+    }
+
+    // 刪除 product_images 並重新上傳
+    await db.product_images.destroy({ where: { product_id }, transaction });
+
+    if (new_image_path.length > 0) {
+      const img_data = new_image_path.map((img_url) => ({
+        product_id,
+        img_url,
+      }));
+      await db.product_images.bulkCreate(img_data, { transaction });
+    }
+
+    await transaction.commit();
+    res.status(200).json({ message: "商品資訊更新成功!" });
   } catch (error) {
+    await transaction.rollback();
     console.error("編輯商品資訊失敗!", error);
     res.status(500).json({ message: "編輯商品資訊失敗!" });
   }

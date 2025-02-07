@@ -60,3 +60,28 @@ exports.upload_image = async (base64_image, category_name, product_id) => {
     throw new Error("圖片上傳失敗");
   }
 };
+
+// 清空要編輯的資料夾
+exports.clear_image = async (category_name, product_id) => {
+  try {
+    category_name = category_name.toLowerCase();
+    const product_folder = `${category_name}${product_id}`;
+    const upload_path = path.join(
+      base_upload_path,
+      category_name,
+      product_folder
+    );
+
+    // 確保資料夾存在後刪除內容
+    if (fs.existsSync(upload_path)) {
+      const files = await fs.promises.readdir(upload_path);
+      for (const file of files) {
+        await fs.promises.unlink(path.join(upload_path, file));
+      }
+      console.log(`已清空 ${upload_path} 內的所有圖片`);
+    }
+  } catch (error) {
+    console.error("清除舊圖片失敗:", error);
+    throw new Error("清除舊圖片失敗");
+  }
+};
