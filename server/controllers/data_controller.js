@@ -23,18 +23,13 @@ exports.get_sales_data = async (req, res) => {
     }
 
     // 確保排序欄位安全
-    const validSortFields = {
-      product_id: "product_id",
-      name: "name",
+    const valid_sort_fields = {
       "product_stock.sales": db.Sequelize.literal("`product_stock`.`sales`"),
       "product_stock.stock": db.Sequelize.literal("`product_stock`.`stock`"),
-      "product_stock.safety_stock": db.Sequelize.literal(
-        "`product_stock`.`safety_stock`"
-      ),
     };
 
-    const sortField = validSortFields[sort] || "product_id";
-    const sortOrder = order.toUpperCase() === "DESC" ? "DESC" : "ASC";
+    const sort_field = valid_sort_fields[sort] || "product_id";
+    const sort_order = order.toUpperCase() === "DESC" ? "DESC" : "ASC";
 
     const { count, rows } = await db.products_info.findAndCountAll({
       where: condition,
@@ -48,7 +43,7 @@ exports.get_sales_data = async (req, res) => {
       ],
       limit: parseInt(limit),
       offset: parseInt(offset),
-      order: [[sortField, sortOrder]],
+      order: [[sort_field, sort_order]],
       distinct: true,
     });
 

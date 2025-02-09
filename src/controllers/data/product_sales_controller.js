@@ -22,6 +22,7 @@ export const page_size = ref(10);
 export const sort_column = ref("product_id"); // 預設以 product_id 排序
 export const sort_order = ref("asc"); // 預設為升序
 
+// 搜尋
 export const search = async () => {
   current_page.value = 1;
   await get_product_data();
@@ -56,9 +57,9 @@ export const get_product_data = async () => {
 };
 
 // 監聽排序變化
-export const handleSortChange = ({ prop, order }) => {
+export const sort_change = ({ prop, order }) => {
   if (!order) {
-    // 當使用者點擊取消排序時，回到預設排序
+    // 沒有排序方法時 回到預設
     sort_column.value = "product_id";
     sort_order.value = "asc";
   } else {

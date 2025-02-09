@@ -22,7 +22,7 @@
         :data="product_data"
         style="width: 100%"
         :row-class-name="row_color"
-        @sort-change="handleSortChange"
+        @sort-change="sort_change"
       >
         <el-table-column prop="product_id" label="序號" />
         <el-table-column prop="name" label="名稱" />
@@ -55,7 +55,7 @@ import {
   page_size,
   change_page,
   get_product_data,
-  handleSortChange,
+  sort_change,
 } from "../../controllers/data/product_sales_controller";
 
 const row_color = ({ row }) => {
