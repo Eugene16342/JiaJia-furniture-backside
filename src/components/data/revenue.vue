@@ -14,6 +14,7 @@
             :shortcuts="shortcuts"
             :disabled-date="disable_date"
             popper-class="custom-datepicker"
+            @change="get_revenue_data"
           />
         </div>
       </div>
@@ -21,18 +22,68 @@
       <!-- 統計數據區塊 -->
       <div class="data_container">
         <div class="data_box">
+          <!-- 總營業額 -->
+          <el-tooltip
+            effect="dark"
+            :content="`總營業額 ` + formatted_total_revenue + ` 元`"
+            placement="top"
+          >
+            <el-card class="data_item">
+              <span class="data_label">總營業額</span>
+              <span class="data_value">
+                {{ total_revenue_wan }}
+                <div>萬</div>
+              </span>
+            </el-card>
+          </el-tooltip>
+
+          <!-- 平均營業額 -->
+          <el-tooltip
+            effect="dark"
+            :content="`平均營業額 ` + formatted_average_revenue + ` 元`"
+            placement="top"
+          >
+            <el-card class="data_item">
+              <span class="data_label">平均營業額</span>
+              <span class="data_value">
+                {{ average_revenue_wan }}
+                <div>萬</div>
+              </span>
+            </el-card>
+          </el-tooltip>
+
+          <!-- 總單數 -->
           <el-card class="data_item">
-            <span class="data_label">平均營業額</span>
-            <span class="data_value">50 </span>
+            <span class="data_label">總單數</span>
+            <span class="data_value">
+              {{ total_order }}
+              <div>張</div>
+            </span>
           </el-card>
+
+          <!-- 平均訂單數 -->
           <el-card class="data_item">
             <span class="data_label">平均訂單數</span>
-            <span class="data_value">5</span>
+            <span class="data_value">
+              {{ average_order }}
+              <div>張</div>
+            </span>
           </el-card>
-          <el-card class="data_item">
-            <span class="data_label">平均單價</span>
-            <span class="data_value">5</span>
-          </el-card>
+
+          <!-- 平均單價 -->
+          <el-tooltip
+            effect="dark"
+            :content="`平均單價 ` + formatted_average_order_price + ` 元`"
+            placement="top"
+          >
+            <el-card class="data_item">
+              <span class="data_label">平均單價</span>
+              <span class="data_value">
+                {{ average_order_price_wan }}
+                <div>萬</div>
+              </span>
+            </el-card>
+          </el-tooltip>
         </div>
       </div>
 
@@ -45,10 +96,9 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
 import { use } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
-import { LineChart } from "echarts/charts";
+import { LineChart, BarChart } from "echarts/charts";
 import {
   GridComponent,
   TooltipComponent,
@@ -56,114 +106,31 @@ import {
 } from "echarts/components";
 import VChart from "vue-echarts";
 
+import {
+  date_range,
+  formatted_total_revenue,
+  total_revenue_wan,
+  total_order,
+  formatted_average_revenue,
+  average_revenue_wan,
+  average_order,
+  formatted_average_order_price,
+  average_order_price_wan,
+  chart_options,
+  shortcuts,
+  disable_date,
+  get_revenue_data,
+} from "../../controllers/data/revenue_controller";
+
 // 註冊 ECharts 組件
 use([
   CanvasRenderer,
   LineChart,
+  BarChart,
   GridComponent,
   TooltipComponent,
   LegendComponent,
 ]);
-
-const date_range = ref([]);
-
-// 圖表數據
-const chart_options = ref({
-  title: {
-    text: "每日營業額趨勢",
-  },
-  tooltip: {
-    trigger: "axis",
-  },
-  legend: {
-    data: ["營業額"],
-  },
-  xAxis: {
-    type: "category",
-    data: [
-      "1月",
-      "2月",
-      "3月",
-      "4月",
-      "5月",
-      "6月",
-      "7月",
-      "8月",
-      "9月",
-      "10月",
-      "11月",
-      "12月",
-    ],
-  },
-  yAxis: {
-    type: "value",
-  },
-  series: [
-    {
-      name: "營業額",
-      type: "line",
-      data: [5000, 15000, 8000, 18000, 12000],
-    },
-  ],
-});
-
-// 監聽 date_range 變化，更新圖表
-watch(date_range, (newRange) => {
-  if (newRange && newRange.length === 2) {
-    fetchRevenueData(newRange);
-  }
-});
-
-// 模擬數據變化
-const fetchRevenueData = (dateRange) => {
-  const newData = [
-    Math.random() * 20000,
-    Math.random() * 20000,
-    Math.random() * 20000,
-    Math.random() * 20000,
-    Math.random() * 20000,
-  ];
-
-  chart_options.value = {
-    ...chart_options.value,
-    series: [{ name: "營業額", type: "line", data: newData }],
-  };
-};
-
-// 快速選擇
-const shortcuts = [
-  {
-    text: "本月",
-    value: () => {
-      const end = new Date();
-      const start = new Date(end.getFullYear(), end.getMonth(), 1);
-      return [start, end];
-    },
-  },
-  {
-    text: "本年",
-    value: () => {
-      const end = new Date();
-      const start = new Date(new Date().getFullYear(), 0);
-      return [start, end];
-    },
-  },
-  {
-    text: "過去六個月",
-    value: () => {
-      const end = new Date();
-      const start = new Date();
-      start.setMonth(start.getMonth() - 6);
-      return [start, end];
-    },
-  },
-];
-
-// 日期限制
-const disable_date = (date) => {
-  const today = new Date();
-  return date > today;
-};
 </script>
 
 <style lang="scss" scoped>
@@ -191,9 +158,8 @@ const disable_date = (date) => {
   margin: 20px;
   .data_box {
     display: flex;
-    justify-content: center;
-    gap: 50px;
-    padding: 10px;
+    justify-content: space-around;
+    gap: 10px;
   }
 
   .data_item {
@@ -217,6 +183,7 @@ const disable_date = (date) => {
 
 // 圖表
 .chart_container {
+  margin-top: 80px;
   width: 100%;
   height: 400px;
   .chart {
