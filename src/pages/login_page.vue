@@ -15,6 +15,7 @@
           v-model="admin_id"
           style="width: 300px; height: 40px"
           placeholder="請輸入使用者ID"
+          maxlength="15"
         />
       </div>
       <div>
@@ -24,6 +25,7 @@
           type="password"
           placeholder="請輸入密碼"
           show-password
+          maxlength="15"
         />
       </div>
       <el-button type="primary" round @click="login">登入</el-button>
@@ -35,14 +37,13 @@
 import { ref } from "vue";
 import { use_auth_store } from "../stores/index";
 import { useRouter } from "vue-router";
-import { onMounted } from "vue";
 
 const auth_store = use_auth_store();
 const router = useRouter();
 
-let admin_id = ref("");
+const admin_id = ref("");
 
-let password = ref("");
+const password = ref("");
 
 async function login() {
   try {

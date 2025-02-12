@@ -59,12 +59,12 @@ const aside_menu = async (role_id) => {
 
     const menu_tree = (parent_id = null) => {
       return permissions
-        .filter((perm) => perm.parent_id == parent_id)
+        .filter((perm) => perm.parent_id == parent_id) // 找出所有父權限為 parent_id 的權限
         .map((perm) => ({
           title: perm.permission_name,
           path: perm.path,
           icon: perm.icon,
-          children: menu_tree(perm.permission_id),
+          children: menu_tree(perm.permission_id), // 找出子權限
         }));
     };
 
@@ -105,7 +105,7 @@ exports.login = async (req, res) => {
 
     const { role_id, role_name } = admin.role;
 
-    // 調用 aside_menu 生成側邊選單
+    // 生成側邊選單
     const menu = await aside_menu(role_id);
 
     req.session.admin = {

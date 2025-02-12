@@ -126,7 +126,7 @@ const routes = [
   },
 ];
 
-// 創建 router 實例
+// 創建 router
 const router = createRouter({
   history: createWebHistory(),
   routes,

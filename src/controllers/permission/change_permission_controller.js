@@ -50,7 +50,6 @@ export const role_change = async () => {
 // 保存請求
 export const save_change = async () => {
   try {
-    console.log("看我", select_role.value, owned_permissions.value);
     if (!select_role.value || owned_permissions.value.length === 0) {
       ElNotification({
         title: "通知",

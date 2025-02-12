@@ -30,11 +30,11 @@
           />
         </el-form-item>
 
-        <!-- 身分 -->
-        <el-form-item class="input" label="身分" prop="role_id">
+        <!-- 身份 -->
+        <el-form-item class="input" label="身份" prop="role_id">
           <el-select
             v-model="form.role_id"
-            placeholder="選擇一個身分"
+            placeholder="選擇一個身份"
             clearable
           >
             <el-option

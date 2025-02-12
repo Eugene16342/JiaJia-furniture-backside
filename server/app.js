@@ -49,7 +49,7 @@ app.use("/api/permission", isAuthenticated(1), permission_routes);
 app.use("/api/admin", isAuthenticated(1), admin_routes);
 app.use("/api/user", isAuthenticated(2), user_routes);
 app.use("/api/product", isAuthenticated(3), product_routes);
-app.use("/api/data", data_routers);
-app.use("/api/revenue", revenue_routers);
+app.use("/api/data", isAuthenticated(5), data_routers);
+app.use("/api/revenue", isAuthenticated(6), revenue_routers);
 
 module.exports = app; // 將 app 導出供 server.js 使用
