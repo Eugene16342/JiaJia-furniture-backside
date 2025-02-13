@@ -2,7 +2,9 @@
 
 這是一個簡易的電商後台，採用 **MVC**架構 和 **RESTful API**設計，前端使用 Vue 3 搭配 vite 以及 element plus，後端使用 Node.js + MySQL，包含 **權限控制、訂單查詢、數據視覺化** 等功能。
 
-🛑 **目前僅支援本地開發，未部屬**
+🛑 目前僅支援本地開發，未部屬
+
+展示影片 : [https://www.youtube.com/watch?v=Dk2tq0DuNGI](https://www.youtube.com/watch?v=hioKAC371fQ)
 
 ---
 
