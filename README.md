@@ -4,7 +4,7 @@
 
 🛑 目前僅支援本地開發，未部屬
 
-展示影片 : [https://www.youtube.com/watch?v=Dk2tq0DuNGI](https://www.youtube.com/watch?v=hioKAC371fQ)
+展示影片 : [連結](https://www.youtube.com/watch?v=hioKAC371fQ)
 
 ---
 
